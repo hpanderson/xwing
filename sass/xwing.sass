@@ -99,8 +99,21 @@ strong em, em strong
   background-image: linear-gradient(rgba(45, 45, 45, .2) 50%, transparent 50%, transparent)
   background-size: 5px 5px
 
-.info-maneuvers table > tbody > tr > td ~ td
+.info-maneuvers .empty-cell
+  border-left-style: none
+  border-right-style: none
+
+.info-maneuvers .rebel
   background-color: #a29199
+
+.info-maneuvers .rebel.empty-cell
+  background-color: #4b1918
+
+.info-maneuvers .empire
+  background-color: #304050
+
+.info-maneuvers .empire.empty-cell
+  background-color: #000000
 
 .info-name
   font-family: BankGothicHD
