@@ -908,39 +908,39 @@ class exportObj.SquadBuilder
                             when 0
                                 # turn left
                                 linePath = "M160,180 L160,70 80,70"
-                                trianglePath = "M80,100 V40 L30,70 Z"
+                                trianglePath = "M80,110 V30 L30,70 Z"
 
                             when 1
                                 # bank left
                                 linePath = "M150,180 S150,120 80,60"
-                                trianglePath = "M80,100 V40 L30,70 Z"
+                                trianglePath = "M80,110 V30 L30,70 Z"
                                 transform = "transform='translate(-5 -15) rotate(45 70 90)' "
 
                             when 2
                                 # straight
                                 linePath = "M100,180 L100,100 100,80"
-                                trianglePath = "M70,80 H130 L100,30 Z"
+                                trianglePath = "M60,80 H140 L100,30 Z"
 
                             when 3
                                 # bank right
                                 linePath = "M50,180 S50,120 120,60"
-                                trianglePath = "M120,100 V40 L170,70 Z"
+                                trianglePath = "M120,110 V30 L170,70 Z"
                                 transform = "transform='translate(5 -15) rotate(-45 130 90)' "
 
                             when 4
                                 # turn right
                                 linePath = "M40,180 L40,70 120,70"
-                                trianglePath = "M120,100 V40 L170,70 Z"
+                                trianglePath = "M120,110 V30 L170,70 Z"
 
                             when 5
                                 # k-turn/u-turn
                                 linePath = "M50,180 L50,100 C50,10 140,10 140,100 L140,120"
-                                trianglePath = "M170,120 H110 L140,180 Z"
+                                trianglePath = "M180,120 H100 L140,180 Z"
 
                         outTable += $.trim """
                           <path d='#{trianglePath}' fill='#{color}' stroke-width='5' stroke='#{outlineColor}' #{transform}/>
-                          <path stroke-width='25' fill='none' stroke='#{outlineColor}' d='#{linePath}' />
-                          <path stroke-width='15' fill='none' stroke='#{color}' d='#{linePath}' />
+                          <path stroke-width='30' fill='none' stroke='#{outlineColor}' d='#{linePath}' />
+                          <path stroke-width='20' fill='none' stroke='#{color}' d='#{linePath}' />
                         """
 
                     outTable += "</svg>"
