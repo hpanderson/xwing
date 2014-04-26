@@ -24,14 +24,14 @@ $.randomInt = (n) ->
 
 # ripped from http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values
 $.getParameterByName = (name) ->
-  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
-  regexS = "[\\?&]" + name + "=([^&#]*)"
-  regex = new RegExp(regexS)
-  results = regex.exec(window.location.search)
-  if results == null
-    return ""
-  else
-    return decodeURIComponent(results[1].replace(/\+/g, " "))
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]")
+    regexS = "[\\?&]" + name + "=([^&#]*)"
+    regex = new RegExp(regexS)
+    results = regex.exec(window.location.search)
+    if results == null
+        return ""
+    else
+        return decodeURIComponent(results[1].replace(/\+/g, " "))
 
 Array::intersects = (other) ->
     for item in this
@@ -75,6 +75,7 @@ class exportObj.SquadBuilder
             sources: null
             points: 100
         @total_points = 0
+        @isEpic = false
 
         @backend = null
         @current_squad = {}
@@ -133,17 +134,27 @@ class exportObj.SquadBuilder
                         <button class="btn save"><i class="icon-edit"></i></button>
                     </div>
                 </div>
-                <div class="span3 points-display-container">
-                    Points: <span class="total-points">0</span> / <input type="number" class="desired-points" value="100"> <span class="points-remaining-container">(<span class="points-remaining"></span> left)</span>
+                <div class="span4 points-display-container">
+                    Points: <span class="total-points">0</span> / <input type="number" class="desired-points" value="100">
+                    <select class="game-type-selector">
+                        <option value="standard">Standard</option>
+                        <option value="epic">Epic</option>
+                        <option value="team-epic">Team Epic</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                    <span class="points-remaining-container">(<span class="points-remaining"></span>&nbsp;left)</span>
+                    <span class="content-warning unreleased-content-used hidden"><br /><i class="icon-exclamation-sign"></i>&nbsp;This squad uses unreleased content!</span>
+                    <span class="content-warning epic-content-used hidden"><br /><i class="icon-exclamation-sign"></i>&nbsp;This squad uses Epic content!</span>
+                    <span class="content-warning illegal-epic-upgrades hidden"><br /><i class="icon-exclamation-sign"></i>&nbsp;Luke, Gunner, and Navigator cannot be equipped onto Huge ships in Epic tournament play!</span>
                 </div>
-                <div class="span6 pull-right button-container">
+                <div class="span5 pull-right button-container">
                     <div class="btn-group pull-right">
 
                         <button class="btn btn-primary view-as-text"><span class="hidden-phone"><i class="icon-print"></i>&nbsp;Print/View as </span>Text</button>
                         <!-- <button class="btn btn-primary print-list hidden-phone hidden-tablet"><i class="icon-print"></i>&nbsp;Print</button> -->
                         <a class="btn btn-primary permalink"><i class="icon-link hidden-phone hidden-tablet"></i>&nbsp;Permalink</a>
 
-                        <button class="btn btn-primary randomize" ><i class="icon-random hidden-phone hidden-tablet"></i>&nbsp;Random<span class="hidden-phone"> Squad!</span></button>
+                        <button class="btn btn-primary randomize" ><i class="icon-random hidden-phone hidden-tablet"></i>&nbsp;Random!</button>
                         <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                             <span class="caret"></span>
                         </button>
@@ -295,11 +306,18 @@ class exportObj.SquadBuilder
         @squad_name_input.closest('div').hide()
         @points_container = $ @status_container.find('div.points-display-container')
         @total_points_span = $ @points_container.find('.total-points')
+        @game_type_selector = $ @status_container.find('.game-type-selector')
+        @game_type_selector.change (e) =>
+            @onGameTypeChanged @game_type_selector.val()
         @desired_points_input = $ @points_container.find('.desired-points')
         @desired_points_input.change (e) =>
-            @onPointsUpdated $.noop
+            @game_type_selector.val 'custom'
+            @onGameTypeChanged 'custom'
         @points_remaining_span = $ @points_container.find('.points-remaining')
         @points_remaining_container = $ @points_container.find('.points-remaining-container')
+        @unreleased_content_used_container = $ @points_container.find('.unreleased-content-used')
+        @epic_content_used_container = $ @points_container.find('.epic-content-used')
+        @illegal_epic_upgrades_container = $ @points_container.find('.illegal-epic-upgrades')
         @permalink = $ @status_container.find('div.button-container a.permalink')
         @view_list_button = $ @status_container.find('div.button-container button.view-as-text')
         @randomize_button = $ @status_container.find('div.button-container button.randomize')
@@ -613,15 +631,53 @@ class exportObj.SquadBuilder
             @current_squad.dirty = true
             @container.trigger 'xwing-backend:squadDirtinessChanged'
 
-    onPointsUpdated: (cb) =>
+    onGameTypeChanged: (gametype, cb=$.noop) =>
+        switch gametype
+            when 'standard'
+                @isEpic = false
+                @desired_points_input.val 100
+            when 'epic'
+                @isEpic = true
+                @desired_points_input.val 300
+            when 'team-epic'
+                @isEpic = true
+                @desired_points_input.val 200
+            when 'custom'
+                @isEpic = false
+        @onPointsUpdated cb
+
+    onPointsUpdated: (cb=$.noop) =>
         @total_points = 0
+        unreleased_content_used = false
+        epic_content_used = false
         for ship, i in @ships
             ship.validate()
             @total_points += ship.getPoints()
+            ship_uses_unreleased_content = ship.checkUnreleasedContent()
+            unreleased_content_used = ship_uses_unreleased_content if ship_uses_unreleased_content
+            ship_uses_epic_content = ship.checkEpicContent()
+            epic_content_used = ship_uses_epic_content if ship_uses_epic_content
         @total_points_span.text @total_points
         points_left = parseInt(@desired_points_input.val()) - @total_points
         @points_remaining_span.text points_left
         @points_remaining_container.toggleClass 'red', (points_left < 0)
+        @unreleased_content_used_container.toggleClass 'hidden', not unreleased_content_used
+        @epic_content_used_container.toggleClass 'hidden', (@isEpic or not epic_content_used)
+
+        # Warn if equipping illegal upgrades in Epic play
+        @illegal_epic_upgrades_container.toggleClass 'hidden', true
+        if @isEpic
+            illegal_for_epic = false
+            for ship, i in @ships
+                if ship?.data?.huge?
+                    for upgrade in ship.upgrades
+                        if upgrade?.data?.epic_restriction_func?
+                            unless upgrade.data.epic_restriction_func ship.data
+                                illegal_for_epic = true
+                                break
+                        break if illegal_for_epic
+                break if illegal_for_epic
+            @illegal_epic_upgrades_container.toggleClass 'hidden', not illegal_for_epic
 
         @fancy_total_points_container.text @total_points
         # update permalink while we're at it
@@ -671,7 +727,7 @@ class exportObj.SquadBuilder
     removeAllShips: ->
         while @ships.length > 0
             @removeShip @ships[0]
-        throw "Ships not emptied" if @ships.length > 0
+        throw new Error("Ships not emptied") if @ships.length > 0
 
     showTextListModal: ->
         # Display modal
@@ -680,8 +736,17 @@ class exportObj.SquadBuilder
     serialize: ->
         #( "#{ship.pilot.id}:#{ship.upgrades[i].data?.id ? -1 for slot, i in ship.pilot.slots}:#{ship.title?.data?.id ? -1}:#{upgrade.data?.id ? -1 for upgrade in ship.title?.conferredUpgrades ? []}:#{ship.modification?.data?.id ? -1}" for ship in @ships when ship.pilot? ).join ';'
 
-        serialization_version = 2
-        """v#{serialization_version}!#{( ship.toSerialized() for ship in @ships when ship.pilot? ).join ';'}"""
+        serialization_version = 3
+        game_type_abbrev = switch @game_type_selector.val()
+            when 'standard'
+                's'
+            when 'epic'
+                'e'
+            when 'team-epic'
+                't'
+            when 'custom'
+                "c=#{$.trim @desired_points_input.val()}"
+        """v#{serialization_version}!#{game_type_abbrev}!#{( ship.toSerialized() for ship in @ships when ship.pilot? ).join ';'}"""
 
     loadFromSerialized: (serialized) ->
         @suppress_automatic_new_ship = true
@@ -692,10 +757,34 @@ class exportObj.SquadBuilder
         matches = re.exec serialized
         if matches?
             # versioned
-            for serialized_ship in matches[2].split(';')
-                unless serialized_ship == ''
-                    new_ship = @addShip()
-                    new_ship.fromSerialized parseInt(matches[1]), serialized_ship
+            version = parseInt matches[1]
+            switch version
+                when 3
+                    # parse out game type
+                    [ game_type_abbrev, serialized_ships ] = matches[2].split('!')
+                    switch game_type_abbrev
+                        when 's'
+                            @game_type_selector.val 'standard'
+                            @game_type_selector.change()
+                        when 'e'
+                            @game_type_selector.val 'epic'
+                            @game_type_selector.change()
+                        when 't'
+                            @game_type_selector.val 'team-epic'
+                            @game_type_selector.change()
+                        else
+                            @game_type_selector.val 'custom'
+                            @desired_points_input.val parseInt(game_type_abbrev.split('=')[1])
+                            @desired_points_input.change()
+                    for serialized_ship in serialized_ships.split(';')
+                        unless serialized_ship == ''
+                            new_ship = @addShip()
+                            new_ship.fromSerialized version, serialized_ship
+                when 2
+                    for serialized_ship in matches[2].split(';')
+                        unless serialized_ship == ''
+                            new_ship = @addShip()
+                            new_ship.fromSerialized version, serialized_ship
         else
             # v1 (unversioned)
             for serialized_ship in serialized.split(';')
@@ -709,7 +798,7 @@ class exportObj.SquadBuilder
 
     uniqueIndex: (unique, type) ->
         if type not of @uniques_in_use
-            throw "Invalid unique type '#{type}'"
+            throw new Error("Invalid unique type '#{type}'")
         @uniques_in_use[type].indexOf unique
 
     claimUnique: (unique, type, cb) =>
@@ -723,7 +812,7 @@ class exportObj.SquadBuilder
                         # Not in crew either; claim it in use as well
                         @uniques_in_use['Upgrade'].push crew
                     else
-                        throw "Unique #{type} '#{unique.name}' already claimed as crew"
+                        throw new Error("Unique #{type} '#{unique.name}' already claimed as crew")
             else if type == 'Upgrade'
                 if unique.slot == 'Crew'
                     # Check pilots
@@ -733,14 +822,14 @@ class exportObj.SquadBuilder
                             # Not a pilot either; claim it in use as well
                             @uniques_in_use['Pilot'].push pilot
                         else
-                            throw "Unique #{type} '#{unique.name}' already claimed as pilot"
+                            throw new Error("Unique #{type} '#{unique.name}' already claimed as pilot")
                 # Multiple upgrades have the same name but different slots
                 for upgrade_alias in unique.aka ? []
                     #console.log "Also claiming #{upgrade_alias} in use"
                     @uniques_in_use['Upgrade'].push exportObj.upgradesByLocalizedName[upgrade_alias]
             @uniques_in_use[type].push unique
         else
-            throw "Unique #{type} '#{unique.name}' already claimed"
+            throw new Error("Unique #{type} '#{unique.name}' already claimed")
         cb()
 
     releaseUnique: (unique, type, cb) =>
@@ -753,7 +842,7 @@ class exportObj.SquadBuilder
                 if crew? and crew?.unique?
                     idx = @uniqueIndex crew, 'Upgrade'
                     if idx < 0
-                        throw "Unique crew accompanying #{unique.name} was not also claimed!"
+                        throw new Error("Unique crew accompanying #{unique.name} was not also claimed!")
                     @uniques_in_use['Upgrade'].splice idx, 1
             else if type == 'Upgrade'
                 if unique.slot == 'Crew'
@@ -761,7 +850,7 @@ class exportObj.SquadBuilder
                     if pilot? and pilot?.unique?
                         idx = @uniqueIndex pilot, 'Pilot'
                         if idx < 0
-                            throw "Unique pilot accompanying #{unique.name} was not also claimed!"
+                            throw new Error("Unique pilot accompanying #{unique.name} was not also claimed!")
                         @uniques_in_use['Pilot'].splice idx, 1
                 # Release any aliases
                 for upgrade_alias in unique.aka ? []
@@ -769,7 +858,7 @@ class exportObj.SquadBuilder
                     alias_idx = @uniqueIndex(exportObj.upgradesByLocalizedName[upgrade_alias], 'Upgrade')
                     @uniques_in_use['Upgrade'].splice alias_idx, 1
         else
-            throw "Unique #{type} '#{unique.name}' not in use"
+            throw new Error("Unique #{type} '#{unique.name}' not in use")
         cb()
 
     addShip: ->
@@ -804,17 +893,7 @@ class exportObj.SquadBuilder
         # Re-add selected pilot
         if include_pilot? and include_pilot.unique? and @matcher(include_pilot.name, term)
             unclaimed_faction_pilots.push include_pilot
-        result_pilots_by_ship = {}
-        for result_pilot in ({ id: pilot.id, text: "#{pilot.name} (#{pilot.points})", points: pilot.points, ship: pilot.ship} for pilot in unclaimed_faction_pilots)
-            if result_pilot.ship not of result_pilots_by_ship
-                result_pilots_by_ship[result_pilot.ship] = []
-            result_pilots_by_ship[result_pilot.ship].push result_pilot
-        results = []
-        for ship in Object.keys(result_pilots_by_ship).sort()
-            results.push
-                text: ship
-                children: result_pilots_by_ship[ship].sort exportObj.sortHelper
-        results
+        ({ id: pilot.id, text: "#{pilot.name} (#{pilot.points})", points: pilot.points, ship: pilot.ship} for pilot in unclaimed_faction_pilots).sort exportObj.sortHelper
 
     getAvailableUpgradesIncluding: (slot, include_upgrade, ship, term='') ->
         # Returns data formatted for Select2
@@ -862,7 +941,7 @@ class exportObj.SquadBuilder
     # Converts a maneuver table for into an HTML table.
     getManeuverTableHTML: (maneuvers, baseManeuvers) ->
         if not maneuvers? or maneuvers.length == 0
-          return "Missing maneuver info."
+            return "Missing maneuver info."
 
         outTable = "<table><tbody>"
 
@@ -870,9 +949,9 @@ class exportObj.SquadBuilder
 
             haveManeuver = false
             for v in maneuvers[speed]
-              if v > 0
-                haveManeuver = true
-                break
+                if v > 0
+                    haveManeuver = true
+                    break
 
             continue if not haveManeuver
 
@@ -895,7 +974,7 @@ class exportObj.SquadBuilder
 
                         outlineColor = "black"
                         if maneuvers[speed][turn] != baseManeuvers[speed][turn]
-                          outlineColor = "gold" # highlight manuevers modified by another card (e.g. R2 Astromech makes all 1 & 2 speed maneuvers green)
+                            outlineColor = "gold" # highlight manuevers modified by another card (e.g. R2 Astromech makes all 1 & 2 speed maneuvers green)
 
                         transform = ""
                         switch turn
@@ -951,7 +1030,7 @@ class exportObj.SquadBuilder
                     effective_stats = data.effectiveStats()
                     extra_actions = $.grep effective_stats.actions, (el, i) ->
                         el not in data.data.actions
-                    @info_container.find('.info-name').html """#{if data.pilot.unique then "&middot;&nbsp;" else ""}#{data.pilot.name}"""
+                    @info_container.find('.info-name').html """#{if data.pilot.unique then "&middot;&nbsp;" else ""}#{data.pilot.name}#{if data.pilot.epic? then " (#{exportObj.translate(@language, 'ui', 'epic')})" else ""}#{if exportObj.isReleased(data.pilot) then "" else " (#{exportObj.translate(@language, 'ui', 'unreleased')})"}"""
                     @info_container.find('p.info-text').html data.pilot.text ? ''
                     @info_container.find('tr.info-ship td.info-data').text data.pilot.ship
                     @info_container.find('tr.info-ship').show()
@@ -976,7 +1055,7 @@ class exportObj.SquadBuilder
                     @info_container.find('p.info-maneuvers').html(@getManeuverTableHTML(effective_stats.maneuvers, data.data.maneuvers))
                 when 'Pilot'
                     @info_container.find('.info-sources').text (exportObj.translate(@language, 'sources', source) for source in data.sources).sort().join(', ')
-                    @info_container.find('.info-name').html """#{if data.unique then "&middot;&nbsp;" else ""}#{data.name}"""
+                    @info_container.find('.info-name').html """#{if data.unique then "&middot;&nbsp;" else ""}#{data.name}#{if data.epic? then " (#{exportObj.translate(@language, 'ui', 'epic')})" else ""}#{if exportObj.isReleased(data) then "" else " (#{exportObj.translate(@language, 'ui', 'unreleased')})"}"""
                     @info_container.find('p.info-text').html data.text ? ''
                     ship = exportObj.ships[data.ship]
                     @info_container.find('tr.info-ship td.info-data').text data.ship
@@ -1002,7 +1081,7 @@ class exportObj.SquadBuilder
                     @info_container.find('p.info-maneuvers').html(@getManeuverTableHTML(ship.maneuvers, ship.maneuvers))
                 when 'Addon'
                     @info_container.find('.info-sources').text (exportObj.translate(@language, 'sources', source) for source in data.sources).sort().join(', ')
-                    @info_container.find('.info-name').html """#{if data.unique then "&middot;&nbsp;" else ""}#{data.name}"""
+                    @info_container.find('.info-name').html """#{if data.unique then "&middot;&nbsp;" else ""}#{data.name}#{if data.epic? then " (#{exportObj.translate(@language, 'ui', 'epic')})" else ""}#{if exportObj.isReleased(data) then  "" else " (#{exportObj.translate(@language, 'ui', 'unreleased')})"}"""
                     @info_container.find('p.info-text').html data.text ? ''
                     @info_container.find('tr.info-ship').hide()
                     @info_container.find('tr.info-skill').hide()
@@ -1054,9 +1133,10 @@ class exportObj.SquadBuilder
                 if idx == 0
                     # Add random ship
                     #console.log "Add ship"
-                    available_pilots = @getAvailablePilotsForShipIncluding()
-                    ship_group = available_pilots[$.randomInt available_pilots.length]
-                    pilot = ship_group.children[$.randomInt ship_group.children.length]
+                    available_ships = @getAvailableShipsMatching()
+                    ship_type = available_ships[$.randomInt available_ships.length].text
+                    available_pilots = @getAvailablePilotsForShipIncluding(ship_type)
+                    pilot = available_pilots[$.randomInt available_pilots.length]
                     if exportObj.pilotsById[pilot.id].sources.intersects(data.allowed_sources)
                         new_ship = @addShip()
                         new_ship.setPilotById pilot.id
@@ -1075,7 +1155,7 @@ class exportObj.SquadBuilder
                             available_modifications = (modification for modification in @getAvailableModificationsIncluding(null, addon.ship) when exportObj.modificationsById[modification.id].sources.intersects(data.allowed_sources))
                             addon.setById available_modifications[$.randomInt available_modifications.length].id if available_modifications.length > 0
                         else
-                            throw "Invalid addon type #{addon.type}"
+                            throw new Error("Invalid addon type #{addon.type}")
 
             else
                 #console.log "Need to remove something"
@@ -1095,7 +1175,7 @@ class exportObj.SquadBuilder
                     else if thing_to_remove instanceof GenericAddon
                         thing_to_remove.setData null
                     else
-                        throw "Unknown thing to remove #{thing_to_remove}"
+                        throw new Error("Unknown thing to remove #{thing_to_remove}")
             # continue the "loop"
             window.setTimeout @_makeRandomizerLoopFunc(data), 0
         else
@@ -1117,11 +1197,10 @@ class exportObj.SquadBuilder
         # Clear all existing ships
         while @ships.length > 0
             @removeShip @ships[0]
-        throw "Ships not emptied" if @ships.length > 0
+        throw new Error("Ships not emptied") if @ships.length > 0
         data =
             iterations: 0
             max_points: max_points
-            allowed_sources: allowed_sources
             max_iterations: max_iterations
             keep_running: true
             allowed_sources: allowed_sources ? exportObj.expansions
@@ -1176,12 +1255,12 @@ class Ship
         @teardownUI()
         idx = @builder.ships.indexOf this
         if idx < 0
-            throw "Ship not registered with builder"
+            throw new Error("Ship not registered with builder")
         @builder.ships.splice idx, 1
         cb()
 
     copyFrom: (other) ->
-        throw "Cannot copy from self" if other is this
+        throw new Error("Cannot copy from self") if other is this
         #console.log "Attempt to copy #{other?.pilot?.name}"
         return unless other.pilot? and other.data? and not other.pilot.unique
         #console.log "Setting pilot to ID=#{other.pilot.id}"
@@ -1222,7 +1301,7 @@ class Ship
         @pilot_selector.data('select2').container.show()
         if ship_type != @pilot?.ship
             # Ship changed; select first non-unique
-            @setPilot (exportObj.pilotsById[result.id] for result in @builder.getAvailablePilotsForShipIncluding(ship_type)[0].children when not exportObj.pilotsById[result.id].unique)[0]
+            @setPilot (exportObj.pilotsById[result.id] for result in @builder.getAvailablePilotsForShipIncluding(ship_type) when not exportObj.pilotsById[result.id].unique)[0]
 
         # Clear ship background class
         for cls in @row.attr('class').split(/\s+/)
@@ -1603,7 +1682,7 @@ class Ship
                 modification_id = parseInt modification_id
                 @modifications[0].setById modification_id if modification_id >= 0
 
-            when 2
+            when 2, 3
                 # PILOT_ID:UPGRADEID1,UPGRADEID2:TITLEID:MODIFICATIONID:TITLEADDONTYPE1.TITLEADDONID1,TITLEADDONTYPE2.TITLEADDONID2
                 [ pilot_id, upgrade_ids, title_id, modification_id, conferredaddon_pairs ] = serialized.split ':'
                 @setPilotById parseInt(pilot_id)
@@ -1627,7 +1706,7 @@ class Ship
                         if conferred_addon instanceof addon_cls
                             conferred_addon.setById addon_id
                         else
-                            throw "Expected addon class #{addon_cls.constructor.name} for conferred addon at index #{i} but #{conferred_addon.constructor.name} is there"
+                            throw new Error("Expected addon class #{addon_cls.constructor.name} for conferred addon at index #{i} but #{conferred_addon.constructor.name} is there")
 
         @updateSelections()
 
@@ -1644,7 +1723,7 @@ class Ship
         # need a deep copy of maneuvers array
         stats.maneuvers = []
         for s in [0 ... (@data.maneuvers ? []).length]
-          stats.maneuvers[s] = @data.maneuvers[s].slice 0
+            stats.maneuvers[s] = @data.maneuvers[s].slice 0
 
         for upgrade in @upgrades
             upgrade.data.modifier_func(stats) if upgrade?.data?.modifier_func?
@@ -1678,6 +1757,44 @@ class Ship
                     break
             break if valid
         @updateSelections()
+
+    checkUnreleasedContent: ->
+        if @pilot? and not exportObj.isReleased @pilot
+            #console.log "#{@pilot.name} is unreleased"
+            return true
+
+        if @title?.data? and not exportObj.isReleased @title.data
+            #console.log "#{@title.data.name} is unreleased"
+            return true
+
+        for modification in @modifications
+            if modification?.data? and not exportObj.isReleased modification.data
+                #console.log "#{modification.data.name} is unreleased"
+                return true
+
+        for upgrade in @upgrades
+            if upgrade?.data? and not exportObj.isReleased upgrade.data
+                #console.log "#{upgrade.data.name} is unreleased"
+                return true
+
+        false
+
+    checkEpicContent: ->
+        if @pilot? and @pilot.epic?
+            return true
+
+        if @title?.data?.epic?
+            return true
+
+        for modification in @modifications
+            if modification?.data?.epic?
+                return true
+
+        for upgrade in @upgrades
+            if upgrade?.data?.epic?
+                return true
+
+        false
 
 class GenericAddon
     constructor: (args) ->
@@ -1749,7 +1866,7 @@ class GenericAddon
                 else if addon instanceof exportObj.Modification
                     @ship.modifications.push addon
                 else
-                    throw "Unexpected addon type for addon #{addon}"
+                    throw new Error("Unexpected addon type for addon #{addon}")
                 @conferredAddons.push addon
 
     rescindAddons: ->
@@ -1762,7 +1879,7 @@ class GenericAddon
             else if addon instanceof exportObj.Modification
                 @ship.modifications.removeItem addon
             else
-                throw "Unexpected addon type for addon #{addon}"
+                throw new Error("Unexpected addon type for addon #{addon}")
         @conferredAddons = []
 
     getPoints: ->

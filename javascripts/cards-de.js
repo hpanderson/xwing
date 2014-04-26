@@ -73,7 +73,9 @@
       titlePlaceholder: "kein Titel",
       upgradeHeader: function(translator, language, slot) {
         return "" + (translator(language, 'slot', slot)) + " Upgrade";
-      }
+      },
+      unreleased: "unveröffentlichte",
+      epic: "epic"
     },
     byCSSSelector: {
       '.translate.sort-cards-by': 'Sortiere Karten per',
@@ -102,7 +104,7 @@
   exportObj.cardLoaders.Deutsch = function() {
     var basic_cards, modification_translations, pilot_translations, title_translations, upgrade_translations;
     exportObj.cardLanguage = 'Deutsch';
-    basic_cards = window.basicCardData();
+    basic_cards = exportObj.basicCardData();
     exportObj.ships = basic_cards.ships;
     exportObj.renameShip('TIE Interceptor', 'TIE Abfangjäger');
     pilot_translations = {
@@ -685,6 +687,9 @@
       },
       "Jan Ors": {
         text: "This card has not yet been revealed."
+      },
+      "Toryn Farr": {
+        text: "<strong>Action:</strong> Spend any amount of energy to choose that many enemy ships at Range 1-2.  Remove all focus, evade, and blue target lock tokens from those ships."
       }
     };
     modification_translations = {
@@ -758,6 +763,9 @@
       },
       "Tantive IV": {
         text: "Your fore section upgrade bar gains 1 additional %CREW% and 1 additional %TEAM% upgrade icon."
+      },
+      "Bright Hope": {
+        text: "A reinforce action assigned to your fore section adds 2 %EVADE% results (instead of 1)."
       }
     };
     return exportObj.setupCardData(basic_cards, pilot_translations, upgrade_translations, modification_translations, title_translations);

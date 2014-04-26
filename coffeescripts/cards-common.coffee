@@ -1,6 +1,21 @@
 # This must be loaded before any of the card language modules!
 exportObj = exports ? this
 
+exportObj.unreleasedExpansions = [
+    "Rebel Transport Expansion Pack"
+    "Z-95 Headhunter Expansion Pack"
+    "TIE Defender Expansion Pack"
+    "E-Wing Expansion Pack"
+    "TIE Phantom Expansion Pack"
+    "Tantive IV Expansion Pack"
+    "Rebel Aces Expansion Pack"
+]
+
+exportObj.isReleased = (data) ->
+    for source in data.sources
+        return true if source not in exportObj.unreleasedExpansions
+    false
+
 # Returns an independent copy of the data which can be modified by translation
 # modules.
 exportObj.basicCardData = ->
@@ -251,6 +266,7 @@ exportObj.basicCardData = ->
                 "Coordinate"
                 "Jam"
             ]
+            large: true
             huge: true
         "Z-95 Headhunter":
             name: "Z-95 Headhunter"
@@ -266,9 +282,9 @@ exportObj.basicCardData = ->
             maneuvers: [
               [ 0, 0, 0, 0, 0, 0]
               [ 0, 1, 2, 1, 0, 0]
-              [ 1, 1, 2, 1, 1, 0]
-              [ 1, 1, 1, 1, 1, 0]
-              [ 0, 0, 3, 0, 0, 3]
+              [ 1, 2, 2, 2, 1, 0]
+              [ 1, 1, 1, 1, 1, 3]
+              [ 0, 0, 1, 0, 0, 0]
             ]
         "TIE Defender":
             name: "TIE Defender"
@@ -327,6 +343,7 @@ exportObj.basicCardData = ->
                 "Coordinate"
                 "Target Lock"
             ]
+            large: true
             huge: true
         "CR90 Corvette (Aft)":
             name: "CR90 Corvette (Aft)"
@@ -339,6 +356,7 @@ exportObj.basicCardData = ->
                 "Reinforce"
                 "Jam"
             ]
+            large: true
             huge: true
 
     # name field is for convenience only
@@ -1164,6 +1182,7 @@ exportObj.basicCardData = ->
         {
             name: "GR-75 Medium Transport"
             id: 63
+            epic: true
             ship: "GR-75 Medium Transport"
             sources: [ "Rebel Transport Expansion Pack", ]
             skill: 3
@@ -1386,6 +1405,7 @@ exportObj.basicCardData = ->
         {
             name: "CR90 Corvette (Fore)"
             id: 80
+            epic: true
             ship: "CR90 Corvette (Fore)"
             sources: [ "Tantive IV Expansion Pack", ]
             skill: 4
@@ -1402,6 +1422,7 @@ exportObj.basicCardData = ->
         {
             name: "CR90 Corvette (Aft)"
             id: 81
+            epic: true
             ship: "CR90 Corvette (Aft)"
             sources: [ "Tantive IV Expansion Pack", ]
             skill: 4
@@ -1714,6 +1735,8 @@ exportObj.basicCardData = ->
             slot: "Crew"
             sources: [ "Slave I Expansion Pack", ]
             points: 5
+            epic_restriction_func: (ship) ->
+                not (ship.huge ? false)
         }
         {
             name: "Ion Cannon"
@@ -1803,6 +1826,8 @@ exportObj.basicCardData = ->
             slot: "Crew"
             sources: [ "Millennium Falcon Expansion Pack", ]
             points: 7
+            epic_restriction_func: (ship) ->
+                not (ship.huge ? false)
         }
         {
             name: "Nien Nunb"
@@ -1940,6 +1965,8 @@ exportObj.basicCardData = ->
             slot: "Crew"
             sources: [ "Lambda-Class Shuttle Expansion Pack", ]
             points: 3
+            epic_restriction_func: (ship) ->
+                not (ship.huge ? false)
         }
         {
             name: "Opportunist"
@@ -2172,6 +2199,17 @@ exportObj.basicCardData = ->
             points: 99
             faction: "Rebel Alliance"
         }
+        {
+            name: "Toryn Farr"
+            id: 76
+            unique: true
+            slot: "Crew"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 6
+            faction: "Rebel Alliance"
+            restriction_func: (ship) ->
+                ship.data.huge ? false
+        }
     ]
 
     modificationsById: [
@@ -2354,6 +2392,17 @@ exportObj.basicCardData = ->
                 }
             ]
         }
+        {
+            name: "Bright Hope"
+            id: 10
+            energy: "+2"
+            unique: true
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 5
+            ship: "GR-75 Medium Transport"
+            modifier_func: (stats) ->
+                stats.energy += 2
+        }
     ]
 
 exportObj.setupCardData = (basic_cards, pilot_translations, upgrade_translations, modification_translations, title_translations) ->
@@ -2434,6 +2483,14 @@ exportObj.setupCardData = (basic_cards, pilot_translations, upgrade_translations
     exportObj.modificationsByLocalizedName = {}
     for modification_name, modification of exportObj.modifications
         exportObj.fixIcons modification
+        # Modifications cannot be added to huge ships unless specifically allowed
+        if modification.huge?
+            unless modification.restriction_func?
+                modification.restriction_func = (ship) ->
+                    ship.data.huge ? false
+        else
+            modification.restriction_func = (ship) ->
+                not (ship.data.huge ? false)
         exportObj.modificationsById[modification.id] = modification
         exportObj.modificationsByLocalizedName[modification.name] = modification
         for source in modification.sources

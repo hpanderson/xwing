@@ -7,7 +7,7 @@
     exportObj.codeToLanguage = {};
   }
 
-  exportObj.codeToLanguage.en = 'Español';
+  exportObj.codeToLanguage.es = 'Español';
 
   if (exportObj.translations == null) {
     exportObj.translations = {};
@@ -73,7 +73,9 @@
       titlePlaceholder: "No Title",
       upgradeHeader: function(translator, language, slot) {
         return "" + (translator(language, 'slot', slot)) + " Upgrade";
-      }
+      },
+      unreleased: "inédito",
+      epic: "epic"
     },
     byCSSSelector: {
       '.xwing-card-browser .translate.sort-cards-by': 'Sort cards by',
@@ -102,7 +104,7 @@
   exportObj.cardLoaders['Español'] = function() {
     var basic_cards, modification_translations, pilot_translations, title_translations, upgrade_translations;
     exportObj.cardLanguage = 'Español';
-    basic_cards = window.basicCardData();
+    basic_cards = exportObj.basicCardData();
     exportObj.ships = basic_cards.ships;
     exportObj.renameShip('Lambda-Class Shuttle', 'Lanzadera clase Lambda');
     exportObj.renameShip('TIE Advanced', 'TIE Avanzado');
@@ -768,6 +770,9 @@
       },
       "Jan Ors": {
         text: "Esta carta no ha sido publicada."
+      },
+      "Toryn Farr": {
+        text: "<strong>Action:</strong> Spend any amount of energy to choose that many enemy ships at Range 1-2.  Remove all focus, evade, and blue target lock tokens from those ships."
       }
     };
     modification_translations = {
@@ -848,6 +853,10 @@
       "Tantive IV": {
         text: "Your fore section upgrade bar gains 1 additional %CREW% and 1 additional %TEAM% upgrade icon.",
         ship: "Corbeta CR90 (Proa)"
+      },
+      "Bright Hope": {
+        text: "A reinforce action assigned to your fore section adds 2 %EVADE% results (instead of 1).",
+        ship: 'Transporte mediano GR-75'
       }
     };
     return exportObj.setupCardData(basic_cards, pilot_translations, upgrade_translations, modification_translations, title_translations);

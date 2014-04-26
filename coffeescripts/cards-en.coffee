@@ -61,6 +61,8 @@ exportObj.translations.English =
         titlePlaceholder: "No Title"
         upgradeHeader: (translator, language, slot) ->
             "#{translator language, 'slot', slot} Upgrade"
+        unreleased: "unreleased"
+        epic: "epic"
     byCSSSelector:
         '.xwing-card-browser .translate.sort-cards-by': 'Sort cards by'
         '.xwing-card-browser option[value="name"]': 'Name'
@@ -82,7 +84,7 @@ exportObj.cardLoaders.English = () ->
     exportObj.cardLanguage = 'English'
 
     # Assumes cards-common has been loaded
-    basic_cards = window.basicCardData()
+    basic_cards = exportObj.basicCardData()
 
     # English names are loaded by default, so no update is needed
     exportObj.ships = basic_cards.ships
@@ -220,7 +222,7 @@ exportObj.cardLoaders.English = () ->
         "Determination":
             text: """When you are dealt a faceup Damage card with the Pilot trait, discard it immediately without resolving its effect."""
         "Swarm Tactics":
-            text: """At the start of the Combat phase, choose 1 friendly ship at Range 1.<br /><br />Until the end of this phase, treat the chosen ship as it its pilot skill were equal to your pilot skill."""
+            text: """At the start of the Combat phase, you may choose 1 friendly ship at Range 1.<br /><br />Until the end of this phase, treat the chosen ship as if its pilot skill were equal to your pilot skill."""
         "Squad Leader":
             text: """<strong>Action:</strong> Choose 1 ship at Range 1-2 that has a lower pilot skill than you.<br /><br />The chosen ship may immediately perform 1 free action."""
         "Expert Handling":
@@ -250,7 +252,7 @@ exportObj.cardLoaders.English = () ->
         "Heavy Laser Cannon":
             text: """<strong>Attack:</strong> Attack 1 ship.<br /><br />Immediately after rolling your attack dice, you must change all of your %CRIT% results to %HIT% results."""
         "Seismic Charges":
-            text: """When you reveal your maneuver dial, you may discard this card to drop 1 seismic charge token.<br /><br />This token detonates at the end of the Activation phase."""
+            text: """When you reveal your maneuver dial, you may discard this card to drop 1 seismic charge token.<br /><br />This token detonates at the end of the Activation phase.<br /><br /><strong>Seismic Charge Token:</strong> When this bomb token detonates, each ship at Range 1 of the token suffers 1 damage.  Then discard this token."""
         "Mercenary Copilot":
             text: """When attacking at Range 3, you may change 1 of your %HIT% results to a %CRIT% result."""
         "Assault Missiles":
@@ -258,7 +260,7 @@ exportObj.cardLoaders.English = () ->
         "Veteran Instincts":
             text: """Increase your pilot skill value by 2."""
         "Proximity Mines":
-            text: """<strong>Action:</strong> Discard this card to drop 1 proximity mine token.<br /><br />When a ship executes a maneuver, if its base or maneuver template overlaps this token, this token detonates."""
+            text: """<strong>Action:</strong> Discard this card to <strong>drop</strong> 1 proximity mine token.<br /><br />When a ship's base or maneuver template overlaps this token, this token <strong>detonates</strong>.<br /><br /><strong>Proximity Mine Token:</strong> When this bomb token detonates, the ship that moved through or overlapped this token rolls 3 attack dice and suffers all damage (%HIT%) and critical damage (%CRIT%) rolled.  Then discard this token."""
         "Weapons Engineer":
             text: """You may maintain 2 target locks (only 1 per enemy ship).<br /><br />When you acquire a target lock, you may lock onto 2 different ships."""
         "Draw Their Fire":
@@ -284,7 +286,7 @@ exportObj.cardLoaders.English = () ->
         "Intelligence Agent":
             text: """At the start of the Activation phase, choose 1 enemy ship at Range 1-2.  You may look at that ship's chosen maneuver."""
         "Proton Bomb":
-            text: """When you reveal your maneuver dial, you may discard this card to <strong>drop</strong> 1 proton bomb token.<br /><br />This token <strong>detonates</strong> at the end of the Activation phase."""
+            text: """When you reveal your maneuver dial, you may discard this card to <strong>drop</strong> 1 proton bomb token.<br /><br />This token <strong>detonates</strong> at the end of the Activation phase.<br /><br /><strong>Proton Bomb Token:</strong> When this bomb token detonates, deal 1 <strong>faceup</strong> Damage card to each ship at Range 1 of the token.  Then discard this token."""
         "Adrenaline Rush":
             text: """When you reveal a red maneuver, you may discard this card to treat that maneuver as a white maneuver until the end of the Activation phase."""
         "Advanced Sensors":
@@ -353,6 +355,8 @@ exportObj.cardLoaders.English = () ->
             text: """After you receive a stress token from your ship, you may assign a focus token to ???"""
         "Jan Ors":
             text: """This card has not yet been revealed."""
+        "Toryn Farr":
+            text: """<strong>Action:</strong> Spend any amount of energy to choose that many enemy ships at Range 1-2.  Remove all focus, evade, and blue target lock tokens from those ships."""
 
     modification_translations =
         "Stealth Device":
@@ -393,5 +397,7 @@ exportObj.cardLoaders.English = () ->
             text: """Your upgrade bar gains the %CREW% upgrade icon."""
         "Tantive IV":
             text: """Your fore section upgrade bar gains 1 additional %CREW% and 1 additional %TEAM% upgrade icon."""
+        "Bright Hope":
+            text: """A reinforce action assigned to your fore section adds 2 %EVADE% results (instead of 1)."""
 
     exportObj.setupCardData basic_cards, pilot_translations, upgrade_translations, modification_translations, title_translations
