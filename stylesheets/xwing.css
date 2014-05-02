@@ -74,6 +74,11 @@ strong em, em strong {
   color: #7ed3e5;
   padding: 2px; }
 
+.info-maneuvers table {
+  table-layout: fixed;
+  width: 100%;
+  max-width: 300px; }
+
 .info-maneuvers table > tbody > tr > td {
   border: 2px solid #d6c9d2; }
 
@@ -349,3 +354,10 @@ input[type=number] {
   height: 8em;
   width: 100%;
   font-family: EurostileStandard; }
+
+.content-warning {
+  color: white;
+  font-size: 0.75em; }
+
+.game-type-selector {
+  width: 8em; }

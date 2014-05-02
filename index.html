@@ -3,15 +3,15 @@
   <head>
     <title>(Yet Another) X-Wing Miniatures Squad Builder</title>
     <meta charset='utf-8'>
-    <link href='bootstrap/css/bootstrap.min.css?1396729056' rel='stylesheet'>
-    <link href='fontawesome/css/font-awesome.min.css?1396729056' rel='stylesheet'>
+    <link href='bootstrap/css/bootstrap.min.css?1398791518' rel='stylesheet'>
+    <link href='fontawesome/css/font-awesome.min.css?1398791518' rel='stylesheet'>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
-    <link href='bootstrap/css/bootstrap-responsive.css?1396729056' media='screen' rel='stylesheet'>
-    <link href='select2-3.4.0/select2.css?1396729056' rel='stylesheet'>
-    <link href='stylesheets/xwing.css?1396729056' rel='stylesheet'>
-    <link href='stylesheets/xwing-screen.css?1396729056' media='screen,handheld' rel='stylesheet'>
-    <link href='stylesheets/xwing-print.css?1396729056' media='print' rel='stylesheet'>
-    <link href='stylesheets/backgrounds.css?1396729056' media='screen,handheld' rel='stylesheet'>
+    <link href='bootstrap/css/bootstrap-responsive.css?1398791518' media='screen' rel='stylesheet'>
+    <link href='select2-3.4.0/select2.css?1398791518' rel='stylesheet'>
+    <link href='stylesheets/xwing.css?1398791518' rel='stylesheet'>
+    <link href='stylesheets/xwing-screen.css?1398791518' media='screen,handheld' rel='stylesheet'>
+    <link href='stylesheets/xwing-print.css?1398791518' media='print' rel='stylesheet'>
+    <link href='stylesheets/backgrounds.css?1398791518' media='screen,handheld' rel='stylesheet'>
   </head>
   <body>
     <script>
@@ -88,6 +88,8 @@
                   
                   <p>German translation by <a href="https://github.com/failgod-marcus">failgod</a> from FFG Forums.</p>
                   
+                  <p>Spanish translation by <a href="http://boardgamegeek.com/user/sebaslocox">evil_wins Solo</a> from BoardGameGeek forums.</p>
+                  
                   <p>Maneuver dial functionality by <a href="https://github.com/hpanderson">hpanderson</a>.</p>
                   
                   <p>Interested in playing with the source or contributing features or bug fixes?  <a href="http://github.com/geordanr/xwing">Fork it on GitHub</a>.  (Issues can also be filed via GitHub.)</p>
@@ -100,6 +102,9 @@
         </div>
       </div>
     </div>
+    <div class='footer'>
+      <div class='msie8-hax'></div>
+    </div>
     <div class='visible-print' id='printable'>
       <div class='printable-header'></div>
       <div class='printable-body'></div>
@@ -108,15 +113,18 @@
         <strong class='site-placeholder'></strong>
       </div>
     </div>
-    <script src='javascripts/jquery-1.8.3.min.js?1396729056'></script>
-    <script src='bootstrap/js/bootstrap.min.js?1396729056'></script>
-    <script src='select2-3.4.0/select2.min.js?1396729056'></script>
-    <script src='javascripts/xwing.min.js?1396729056'></script>
-    <script src='javascripts/cards-en.min.js?1396729056'></script>
-    <script src='javascripts/cards-de.min.js?1396729056'></script>
-    <script src='javascripts/backend.min.js?1396729056'></script>
-    <script src='javascripts/browser.min.js?1396729056'></script>
-    <script src='javascripts/translate.min.js?1396729056'></script>
+    <script src='javascripts/jquery-1.8.3.min.js?1398791518'></script>
+    <script src='javascripts/jquery.xdomainrequest.min.js?1398791518'></script>
+    <script src='bootstrap/js/bootstrap.min.js?1398791518'></script>
+    <script src='select2-3.4.0/select2.min.js?1398791518'></script>
+    <script src='javascripts/xwing.min.js?1398791518'></script>
+    <script src='javascripts/cards-common.min.js?1398791518'></script>
+    <script src='javascripts/cards-en.min.js?1398791518'></script>
+    <script src='javascripts/cards-de.min.js?1398791518'></script>
+    <script src='javascripts/cards-es.min.js?1398791518'></script>
+    <script src='javascripts/backend.min.js?1398791518'></script>
+    <script src='javascripts/browser.min.js?1398791518'></script>
+    <script src='javascripts/translate.min.js?1398791518'></script>
     <script>
       (function() {
         $(document).ready(function() {
@@ -178,7 +186,14 @@
           window.backend.getLanguagePreference(function(language) {
             return $(window).trigger('xwing:languageChanged', language);
           });
-          return window.setupTranslationUI(window.backend);
+          window.setupTranslationUI(window.backend);
+          if ((window.location.href.indexOf('https:') !== 0) && ((navigator.userAgent.indexOf('MSIE 8') > -1) || (navigator.userAgent.indexOf('MSIE 9') > -1))) {
+            $('.msie8-hax').html('Trouble logging in? Try clicking <a href="#">here</a> first.');
+            return $('.msie8-hax a').click(function(e) {
+              e.preventDefault();
+              return window.location.href = window.location.href.replace(/^http:/, 'https:');
+            });
+          }
         });
       
       }).call(this);

@@ -3,26 +3,26 @@ common = require './common'
 common.setup()
 
 
-casper.test.begin "German translations: Rebel", (test) ->
+casper.test.begin "Spanish translations: Rebel", (test) ->
     common.waitForStartup('#rebel-builder')
 
-    common.selectLanguage('Deutsch')
+    common.selectLanguage('Español')
 
     common.createList('#rebel-builder', [
         {
-            ship: 'X-Wing'
-            pilot: "Anfängerpilot"
+            ship: 'Ala-X'
+            pilot: "Piloto Novato"
             upgrades: [
-                "Protonen-Torpedos"
-                "R2 Astromechdroide"
-                "Verbesserte Schilde"
+                "Torpedos de Protones"
+                "Droide Astromecánico R2"
+                "Escudos Mejorados"
             ]
         }
         {
-            ship: 'X-Wing'
+            ship: 'Ala-X'
             pilot: "Luke Skywalker"
             upgrades: [
-                "Treffsicherheit"
+                "Puntería"
                 null
                 "R2-D2"
                 null
@@ -32,12 +32,12 @@ casper.test.begin "German translations: Rebel", (test) ->
             ship: 'YT-1300'
             pilot: "Chewbacca"
             upgrades: [
-                "Das Feuer auf mich ziehen"
-                "Angriffsraketen"
-                "Geheimagent"
-                "Aufklärungs-Experte"
-                "Millennium Falke"
-                "Verbessertes Triebwerk"
+                "Atraer su fuego"
+                "Misiles de Asalto"
+                "Agente del Servicio de Inteligencia"
+                "Especialista en Reconocimiento"
+                "Halcón Milenario"
+                "Motor Mejorado"
             ]
         }
 
@@ -84,36 +84,36 @@ casper.test.begin "German translations: Rebel", (test) ->
         test.done()
 
 
-casper.test.begin "German translations: Imperial", (test) ->
+casper.test.begin "Spanish translations: Imperial", (test) ->
     common.waitForStartup('#rebel-builder')
     common.openEmpireBuilder()
 
-    common.selectLanguage('Deutsch')
+    common.selectLanguage('Español')
 
     common.createList('#empire-builder', [
         {
-            ship: 'TIE Abfangjäger'
-            pilot: "Pilot der Alpha-Staffel"
+            ship: 'Interceptor TIE'
+            pilot: "Piloto del escuadrón Alfa"
             upgrades: [
                 null
-                "Tarnvorrichtung"
+                "Dispositivo de Sigilo"
             ]
         }
         {
-            ship: 'TIE Fighter'
-            pilot: "Pilot der Akademie"
+            ship: 'Caza TIE'
+            pilot: "Piloto de la academia"
             upgrades: [
                 null
             ]
         }
         {
-            ship: 'TIE Abfangjäger'
+            ship: 'Interceptor TIE'
             pilot: "Soontir Fel"
             upgrades: [
                 null
-                "TIE der Roten Garde"
-                "Verbesserte Hülle"
-                "Verbesserte Schilde"
+                "TIE de la Guardia Real"
+                "Blindaje mejorado"
+                "Escudos Mejorados"
             ]
         }
     ])
