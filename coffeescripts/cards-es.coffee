@@ -7,25 +7,25 @@ exportObj.translations ?= {}
 # This is here mostly as a template for other languages.
 exportObj.translations['Español'] =
     action:
-        "Barrel Roll": "Barrel Roll"
-        "Boost": "Boost"
-        "Evade": "Evade"
-        "Focus": "Focus"
-        "Target Lock": "Target Lock"
-        "Recover": "Recover"
-        "Reinforce": "Reinforce"
+        "Barrel Roll": "Tonel Volado"
+        "Boost": "Impulso"
+        "Evade": "Evadir"
+        "Focus": "Concentración"
+        "Target Lock": "Blanco Fijado"
+        "Recover": "Recuperar"
+        "Reinforce": "Reforzar"
         "Jam": "Jam"
-        "Coordinate": "Coordinate"
-        "Cloak": "Cloak"
+        "Coordinate": "Coordinar"
+        "Cloak": "Encubrir"
     slot:
         "Astromech": "Astromech"
         "Bomb": "Bomb"
-        "Cannon": "Cannon"
-        "Crew": "Crew"
-        "Elite": "Elite"
-        "Missile": "Missile"
-        "System": "System"
-        "Torpedo": "Torpedo"
+        "Cannon": "Cañón"
+        "Crew": "Tripulación"
+        "Elite": "Élite"
+        "Missile": "Misiles"
+        "System": "Sistemas"
+        "Torpedo": "Torpedos"
         "Turret": "Turret"
         "Cargo": "Cargo"
         "Hardpoint": "Hardpoint"
@@ -53,14 +53,26 @@ exportObj.translations['Español'] =
         "Tantive IV Expansion Pack": "Tantive IV Expansion Pack"
         "Rebel Aces Expansion Pack": "Rebel Aces Expansion Pack"
     ui:
-        shipSelectorPlaceholder: "Select a ship"
-        pilotSelectorPlaceholder: "Select a pilot"
+        shipSelectorPlaceholder: "Selecciona una nave"
+        pilotSelectorPlaceholder: "Selecciona un piloto"
         upgradePlaceholder: (translator, language, slot) ->
-            "No #{translator language, 'slot', slot} Upgrade"
-        modificationPlaceholder: "No Modification"
-        titlePlaceholder: "No Title"
+            switch slot
+                when 'Elite'
+                    "Sin Talento de Élite"
+                when 'Astromech'
+                    "Sin Droide Astromecánico"
+                else
+                    "Sin Mejora de #{translator language, 'slot', slot}"
+        modificationPlaceholder: "Sin Modificación"
+        titlePlaceholder: "Sin Título"
         upgradeHeader: (translator, language, slot) ->
-            "#{translator language, 'slot', slot} Upgrade"
+            switch slot
+                when 'Elite'
+                    "Talento de Élite"
+                when 'Astromech'
+                    "Droide Astromecánico"
+                else
+                    "Mejora de #{translator language, 'slot', slot}"
         unreleased: "inédito"
         epic: "epic"
     byCSSSelector:
@@ -71,13 +83,13 @@ exportObj.translations['Español'] =
         '.xwing-card-browser option[value="type-by-name"]': 'Type (by Name)'
         '.xwing-card-browser .translate.select-a-card': 'Select a card from the list at the left.'
     singular:
-        'pilots': 'Pilot'
-        'modifications': 'Modification'
-        'titles': 'Title'
+        'pilots': 'Piloto'
+        'modifications': 'Modificación'
+        'titles': 'Título'
     types:
-        'Pilot': 'Pilot'
-        'Modification': 'Modification'
-        'Title': 'Title'
+        'Pilot': 'Piloto'
+        'Modification': 'Modificación'
+        'Title': 'Título'
 
 exportObj.cardLoaders ?= {}
 exportObj.cardLoaders['Español'] = () ->
@@ -323,7 +335,7 @@ exportObj.cardLoaders['Español'] = () ->
             text: """Cuando un enemigo dentro de tu arco de fuego a alcance 1-3 se esté defendiendo, el atacante puede cambiar uno de sus resultados %HIT% por un %CRIT%."""
             ship: "Ala-E"
         "Corran Horn":
-            text: """Al comienzo de ??? puedes realizar ??? no puedes atacar ???"""
+            text: """At the start of the End phase, you may perform one attack.  You cannot attack during the next round."""
             ship: "Ala-E"
         "Sigma Squadron Pilot":
             name: "Piloto del escuadrón Sigma"
@@ -373,8 +385,8 @@ exportObj.cardLoaders['Español'] = () ->
 
     upgrade_translations =
         "Ion Cannon Turret":
-            name: "Ion Cannon Turret"
-            text: """<strong>Attack:</strong> Attack 1 ship (even a ship outside your firing arc).<br /><br />If this attack hits the target ship, the ship suffers 1 damage and receives 1 ion token.  Then cancel all dice results."""
+            name: "Torreta de cañones de Iones"
+            text: """<strong>Ataque:</strong> Ataca 1 nave (aunque esté fuera de tu arco de fuego).<br /><br />Si este ataque impacta en la nave enemiga, ésta sufre 1 punto de daño y recibe 1 ficha de Iones. Después se anulan todos los resultados de los dados."""
         "Proton Torpedoes":
             name: "Torpedos de protones"
             text: """<strong>Ataque (Blanco Fijado):</strong> Gasta tu ficha de Blanco Fijado y descarta esta carta para efectuar este ataque.<br /><br />Puedes cambiar uno de tus resultados %FOCUS% por un resultado %CRIT%."""
@@ -396,8 +408,8 @@ exportObj.cardLoaders['Español'] = () ->
             name: "Determinación"
             text: """Cuando se te asigne una carta de daño boca arriba que tenga el atributo <strong>piloto</strong>, descártala inmediatamente sin resolver su efecto."""
         "Swarm Tactics":
-            name: "Swarm Tactics"
-            text: """At the start of the Combat phase, choose 1 friendly ship at Range 1.<br /><br />Until the end of this phase, treat the chosen ship as it its pilot skill were equal to your pilot skill."""
+            name: "Táctica de Enjambre"
+            text: """Al principio de la fase de Combate, elige 1 nave aliada que tengas a alcance 1.<br /><br />Hasta el final de esta fase se considera que el valor de Habilidad de la nave elejida es igual al tuyo."""
         "Squad Leader":
             name: "Jefe de Escuadrón"
             text: """<strong>Acción:</strong> Elije una nave a alcance 1-2 que tenga una Habilidad de piloto más baja que la tuya.<br /><br />La nave elegida puede realizar inmediatamente una acción gratuita."""
@@ -417,8 +429,8 @@ exportObj.cardLoaders['Español'] = () ->
             name: "Temerario"
             text: """<strong>Acción:</strong> Ejecuta una maniobra blanca (%TURNLEFT% 1) o (%TURNRIGHT% 1) y recibe 1 ficha de Tensión.<br /><br />Después, si no tienes el ícono %BOOST%, lanza 2 dados de ataque y sufre todos los daños normales (%HIT%) y críticos (%CRIT%) obtenidos."""
         "Elusiveness":
-            name: "Elusiveness"
-            text: """When defending, you may receive 1 stress token to choose 1 attack die.  The attacker must reroll that die.<br /><br />If you have at least 1 stress token, you cannot use this ability."""
+            name: "Escurridizo"
+            text: """Cuando te defiendas en combate, puedes recibir 1 ficha de Tensión para elegir un dado de ataque. El atacante deberá volver a lanzar ese dado.<br /><br />No puedes usar esta habilidad si ya tienes una ficha de Tensión."""
         "Homing Missiles":
             name: "Misiles Rastreadores"
             text: """<strong>Ataque (Blanco Fijado):</strong> Gasta tu ficha de Blanco Fijado y descarta esta carta para efectuar este ataque.<br /><br />El defensor no puede gastar fichas de evasión durante este ataque."""
@@ -477,8 +489,8 @@ exportObj.cardLoaders['Español'] = () ->
             name: "Sistema de Control de Disparo"
             text: """Después de que efectúes un ataque, puedes fijar al defensor como blanco."""
         "Blaster Turret":
-            name: "Blaster Turret"
-            text: """<strong>Attack (focus):</strong> Spend 1 focus token to perform this attack against 1 ship (even a ship outside your firing arc)."""
+            name: "Torreta Bláster"
+            text: """<strong>Ataque (Concentración):</strong> Gasta 1 ficha de Concentración para efectuar este ataque contra una nave (aunque esté fuera de tu arco de fuego)."""
         "Recon Specialist":
             name: "Especialista en Reconocimiento"
             text: """Cuando realices una acción de Concentración, asigna 1 ficha de Concentración adicional a tu nave."""
@@ -543,7 +555,7 @@ exportObj.cardLoaders['Español'] = () ->
             text: """<strong>Ataque (Blanco Fijado):</strong> Gasta tu ficha de Blanco Fijado y descarta esta carta para efectuar este ataque.<br /><br />Después de efectuar este ataque, el defensor recibe una ficha de estrés si su valor de blindaje es "4" o menos."""
         "R7 Astromech":
             name: "Droide Astromecánico R7"
-            text: """Esta carta no ha sido publicada."""
+            text: """Once per round when defending, if you have a target lock on the attacker, you may spend the target lock to choose any or all attack dice.  The attacker must reroll the chosen dice."""
         "R7-T1":
             name: "R7-T1"
             text: """<strong>Acción:</strong> Escoge una nave enemiga a alcance 1-2. Si estás dentro del arco de disparo de esa nave puedes fijar blanco en ella. Después realiza una acción de impulso gratuita."""
@@ -581,8 +593,8 @@ exportObj.cardLoaders['Español'] = () ->
             name: "Miras Mejoradas"
             text: """Durante la fase de Activación, trata tu habilidad de piloto como "0"."""
         "Chardaan Refit":
-            name: "Chardaan Refit"
-            text: """This card has a negative squad point cost."""
+            name: "Reajuste Chardaan"
+            text: """Esta carta tiene un valor negativo en puntos de escuadrón."""
         "Proton Rockets":
             name: "Rockets de Protones"
             text: """Esta carta no ha sido publicada."""
@@ -592,6 +604,26 @@ exportObj.cardLoaders['Español'] = () ->
             text: """Esta carta no ha sido publicada."""
         "Toryn Farr":
             text: """<strong>Action:</strong> Spend any amount of energy to choose that many enemy ships at Range 1-2.  Remove all focus, evade, and blue target lock tokens from those ships."""
+        # TODO Check card formatting
+        "R4-D6":
+            text: """When you are hit by an attack and there are at least 3 uncanceled %HIT% results, you may choose to cancel those results until there are 2 remaining.  For each result canceled this way, receive 1 stress token."""
+        "R5-P9":
+            text: """At the end of the Combat phase, you may spend 1 of your focus tokens to recover 1 shield (up to your shield value)."""
+        "WED-15 Repair Droid":
+            text: """<strong>Action:</strong> Spend 1 energy to discard 1 of your facedown Damage cards, or spend 3 energy to discard 1 of your faceup Damage cards."""
+        "Carlist Rieekan":
+            text: """At the start of the Activation phase, you may discard this card to treat each friendly ship's pilot skill value as "12" until the end of the phase."""
+        "Jan Dodonna":
+            text: """When another friendly ship at Range 1 is attacking, it my change 1 of its %HIT% results to a %CRIT%."""
+        "Expanded Cargo Hold":
+            text: """Once per round, when you would be dealt a faceup Damage card, you may draw that card from either the fore or aft Damage deck."""
+            ship: 'Transporte mediano GR-75'
+        "Backup Shield Generator":
+            text: """At the end of each round, you may spend 1 energy to recover 1 shield (up to your shield value)."""
+        "EM Emitter":
+            text: """When you obstruct an attack, the defender rolls 3 additional defense dice (instead of 1)."""
+        "Frequency Jammer":
+            text: """When you perform a jam action, choose 1 enemy ship that does not have a stress token and is not at Range 1 of the jammed ship.  The chosen ship receives 1 stress token."""
 
     modification_translations =
         "Stealth Device":
@@ -622,7 +654,9 @@ exportObj.cardLoaders['Español'] = () ->
             name: "Advanced Cloaking Device"
             text: """After you perform an attack, you may perform a free cloak action."""
             ship: "TIE Fantasma"
-
+        "Combat Retrofit":
+            text: """Increase your hull value by 2 and your shield value by 1."""
+            ship: 'Transporte mediano GR-75'
 
     title_translations =
         "Slave I":
@@ -657,6 +691,12 @@ exportObj.cardLoaders['Español'] = () ->
             ship: "Corbeta CR90 (Proa)"
         "Bright Hope":
             text: """A reinforce action assigned to your fore section adds 2 %EVADE% results (instead of 1)."""
+            ship: 'Transporte mediano GR-75'
+        "Quantum Storm":
+            text: """At the start of the End phase, if you have 1 or fewer energy tokens, gain 1 energy token."""
+            ship: 'Transporte mediano GR-75'
+        "Dutyfree":
+            text: """When performing a jam action, you may choose an enemy ship at Range 1-3 (instead of at Range 1-2)."""
             ship: 'Transporte mediano GR-75'
 
     exportObj.setupCardData basic_cards, pilot_translations, upgrade_translations, modification_translations, title_translations

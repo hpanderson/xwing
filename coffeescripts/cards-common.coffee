@@ -2,7 +2,6 @@
 exportObj = exports ? this
 
 exportObj.unreleasedExpansions = [
-    "Rebel Transport Expansion Pack"
     "Z-95 Headhunter Expansion Pack"
     "TIE Defender Expansion Pack"
     "E-Wing Expansion Pack"
@@ -266,8 +265,14 @@ exportObj.basicCardData = ->
                 "Coordinate"
                 "Jam"
             ]
-            large: true
             huge: true
+            maneuvers: [
+                [ 0, 0, 0, 0, 0, 0 ]
+                [ 0, 1, 1, 1, 0, 0 ]
+                [ 0, 1, 1, 1, 0, 0 ]
+                [ 0, 0, 1, 0, 0, 0 ]
+                [ 0, 0, 1, 0, 0, 0 ]
+            ]
         "Z-95 Headhunter":
             name: "Z-95 Headhunter"
             faction: "Rebel Alliance"
@@ -343,7 +348,6 @@ exportObj.basicCardData = ->
                 "Coordinate"
                 "Target Lock"
             ]
-            large: true
             huge: true
         "CR90 Corvette (Aft)":
             name: "CR90 Corvette (Aft)"
@@ -356,7 +360,6 @@ exportObj.basicCardData = ->
                 "Reinforce"
                 "Jam"
             ]
-            large: true
             huge: true
 
     # name field is for convenience only
@@ -1314,7 +1317,7 @@ exportObj.basicCardData = ->
             ship: "E-Wing"
             sources: [ "E-Wing Expansion Pack", ]
             skill: 3
-            points: 99
+            points: 29
             slots: [
                 "System"
                 "Torpedo"
@@ -1343,7 +1346,7 @@ exportObj.basicCardData = ->
             ship: "E-Wing"
             sources: [ "E-Wing Expansion Pack", ]
             skill: 8
-            points: 99
+            points: 35
             slots: [
                 "Elite"
                 "System"
@@ -2047,7 +2050,7 @@ exportObj.basicCardData = ->
             id: 59
             slot: "Astromech"
             sources: [ "E-Wing Expansion Pack", ]
-            points: 99
+            points: 2
         }
         {
             name: "R7-T1"
@@ -2210,6 +2213,85 @@ exportObj.basicCardData = ->
             restriction_func: (ship) ->
                 ship.data.huge ? false
         }
+        {
+            name: "R4-D6"
+            id: 77
+            unique: true
+            slot: "Astromech"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 1
+        }
+        {
+            name: "R5-P9"
+            id: 78
+            unique: true
+            slot: "Astromech"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 3
+        }
+        {
+            name: "WED-15 Repair Droid"
+            id: 79
+            slot: "Crew"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 2
+            restriction_func: (ship) ->
+                ship.data.huge ? false
+        }
+        {
+            name: "Carlist Rieekan"
+            id: 80
+            unique: true
+            slot: "Crew"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 3
+            faction: "Rebel Alliance"
+            restriction_func: (ship) ->
+                ship.data.huge ? false
+        }
+        {
+            name: "Jan Dodonna"
+            id: 81
+            unique: true
+            slot: "Crew"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 6
+            faction: "Rebel Alliance"
+            restriction_func: (ship) ->
+                ship.data.huge ? false
+        }
+        {
+            name: "Expanded Cargo Hold"
+            id: 82
+            slot: "Cargo"
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 1
+            ship: "GR-75 Medium Transport"
+        }
+        {
+            name: "Backup Shield Generator"
+            id: 83
+            slot: "Cargo"
+            limited: true
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 3
+        }
+        {
+            name: "EM Emitter"
+            id: 84
+            slot: "Cargo"
+            limited: true
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 3
+        }
+        {
+            name: "Frequency Jammer"
+            id: 85
+            slot: "Cargo"
+            limited: true
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 4
+        }
     ]
 
     modificationsById: [
@@ -2279,6 +2361,17 @@ exportObj.basicCardData = ->
             sources: [ "TIE Phantom Expansion Pack", ]
             points: 99
             ship: "TIE Phantom"
+        }
+        {
+            name: "Combat Retrofit"
+            id: 10
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 10
+            ship: "GR-75 Medium Transport"
+            huge: true
+            modifier_func: (stats) ->
+                stats.hull += 2
+                stats.shields += 1
         }
     ]
 
@@ -2403,6 +2496,26 @@ exportObj.basicCardData = ->
             modifier_func: (stats) ->
                 stats.energy += 2
         }
+        {
+            name: "Quantum Storm"
+            id: 11
+            energy: "+1"
+            unique: true
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 4
+            ship: "GR-75 Medium Transport"
+            modifier_func: (stats) ->
+                stats.energy += 1
+        }
+        {
+            name: "Dutyfree"
+            id: 12
+            energy: "+0"
+            unique: true
+            sources: [ "Rebel Transport Expansion Pack", ]
+            points: 2
+            ship: "GR-75 Medium Transport"
+        }
     ]
 
 exportObj.setupCardData = (basic_cards, pilot_translations, upgrade_translations, modification_translations, title_translations) ->
@@ -2488,7 +2601,7 @@ exportObj.setupCardData = (basic_cards, pilot_translations, upgrade_translations
             unless modification.restriction_func?
                 modification.restriction_func = (ship) ->
                     ship.data.huge ? false
-        else
+        else unless modification.restriction_func?
             modification.restriction_func = (ship) ->
                 not (ship.data.huge ? false)
         exportObj.modificationsById[modification.id] = modification
