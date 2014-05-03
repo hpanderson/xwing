@@ -1470,6 +1470,8 @@ class Ship
             minimumResultsForSearch: if $.isMobile() then -1 else 0
         @ship_selector.on 'change', (e) =>
             @setShipType @ship_selector.val()
+            # @pilot is set to the first non-unique pilot when the ship is changed
+            @builder.showTooltip 'Pilot', exportObj.pilotsById[@pilot.id] if @pilot?
         # assign ship row an id for testing purposes
         @row.attr 'id', "row-#{@ship_selector.data('select2').container.attr('id')}"
 
@@ -1486,6 +1488,8 @@ class Ship
             @builder.current_squad.dirty = true
             @builder.container.trigger 'xwing-backend:squadDirtinessChanged'
             @builder.backend_status.fadeOut 'slow'
+            # @pilot is set above by setPilotById
+            @builder.showTooltip 'Pilot', exportObj.pilotsById[@pilot.id] if @pilot?
         @pilot_selector.data('select2').results.on 'mousemove-filtered', (e) =>
             select2_data = $(e.target).closest('.select2-result-selectable').data 'select2-data'
             @builder.showTooltip 'Pilot', exportObj.pilotsById[select2_data.id] if select2_data?.id?
